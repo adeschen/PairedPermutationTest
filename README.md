@@ -7,7 +7,7 @@ This R package carry out permatation tests on paired observations
 ## Authors ##
 
 [Astrid Louise Deschenes](http://ca.linkedin.com/in/astriddeschenes "Astrid Louise Deschenes"), 
-Elsa Bernatchez and [Arnaud Droit](http://ca.linkedin.com/in/drarnaud "Arnaud Droit").
+Elsa Bernatchez, [Lajmi Lakhal Chaieb](http://www.researchgate.net/profile/Lajmi_Lakhal-Chaieb "Lajmi Lakhal Chaieb") and [Arnaud Droit](http://ca.linkedin.com/in/drarnaud "Arnaud Droit").
 
 See [Arnaud Droit Lab](http://bioinformatique.ulaval.ca/home/ "Arnaud Droit Lab") website.
 
