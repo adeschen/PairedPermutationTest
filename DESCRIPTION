@@ -1,0 +1,4 @@
+Package: PairedPermutationTest
+Type: Package
+Title: PairedPermutationTest: a package to carry out permutation tests on paired observations.
+Version: 0.99
