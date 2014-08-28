@@ -11,6 +11,15 @@ Elsa Bernatchez, [Lajmi Lakhal-Chaieb](http://www.researchgate.net/profile/Lajmi
 
 See [Arnaud Droit Lab](http://bioinformatique.ulaval.ca/home/ "Arnaud Droit Lab") website.
 
+## Inspiration ##
+
+The code present in the package is largely inspired from [Dr David C. Howell] (http://www.uvm.edu/~psych/?Page=faculty/Howell.php&SM=facultysubmenu.html "Dr David C. Howell") demonstration of [resampling statistics for paired observations](http://www.uvm.edu/~dhowell/methods8/Supplements/R-Programs/RandomizedRepeated.R "resampling statistics for paired observations") from his book:
+
+> Howell, D.C. (2012) Statistical methods for psychology (8th edition) 
+> Australia: Wadsworth, Cengage Learning.
+
+It would be greatly appreciate to include his book as a reference in any publication that use this package. 
+
 ## License ##
 
 This package and the underlying metagene code are distributed under the Artistic license 2.0. You are free to use and redistribute this software. 
