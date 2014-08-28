@@ -18,7 +18,7 @@ The code present in the package is largely inspired from [Dr David C. Howell] (h
 > Howell, D.C. (2012) Statistical methods for psychology (8th edition) 
 > Australia: Wadsworth, Cengage Learning.
 
-It would be greatly appreciate to include his book as a reference in any publication that use this package. 
+It would be greatly appreciate to include his book as a reference in any publication that required the use of this package. 
 
 ## License ##
 
