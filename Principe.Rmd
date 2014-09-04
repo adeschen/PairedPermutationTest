@@ -1,0 +1,360 @@
+Principe du test de permutations pairées
+========================================================
+
+Lorsque les conditions d'application des tests paramétriques usuels ne sont pas respectées ou dans une situation où l'échantillon disponible est petit, les tests non paramétriques sont une bonne alternative. Les tests de permutations sont des tests non paramétriques intéressants puisqu'ils ne nécessitent aucune autre condition que les observations soient indépendantes et identiquement distribuées sous l'hypothèse nulle. De plus, ils n'imposent pas l'utilisation d'une statistique en particulier. 
+
+L'idée principale derrière ce test est de générer une distribution de référence en calculant une même statistique pour chaque permutation appliquée. En terme simple, sous l'hypothèse nulle, on considère que chaque permutation à la même probabilité d'être sélectionnée. Une fois que les statistiques de chaque permutations sont obtenues, il est possible de comparer la valeur observée initialement à celles générées par les permutations. La probabilité associée au rejet de l'hypothèse nulle correspond au nombre de permutations pour lesquelles la statistique associée est égale ou plus extrême que celle initialement observée, divisée par le nombre total de permutations appliquées. 
+
+Dans le cas de données pairées, les permutations doivent tenir compte des pairages en s'assurant que les observations associées à un même individu ne sont jamais dans un même groupe. En d'autres mots, chaque groupe doit contenir une seule observation associée à un même individu. Considérant une situation où l'on compare 2 groupes de x individus, le nombre possibles de permutations passe alors de (2x)! (2x factoriel) dans une situation régulière sans restriction à 2^x dans une situation où les individus sont pairés.
+
+La fonction présentée ici porte exclusivement sur les tests de permutations pairées. La statistique utilisée est la différence de moyenne entre deux groupes pairés. À titre indicatif, l'hypothèse nulle testée ici affirme que les données retrouvées dans chaque groupe ne sont pas différentes, c'est-à-dire que les moyennes calculées dans chacun des groupes sont équivalentes. De plus, les permutations utilisées sont toujours exhaustives, c'est-à-dire que toutes les permutations possibles sont utilisées et non un sous-ensemble de celles-ci.
+
+
+Étapes du calcul
+------------------------------------------------------
+
+Les étapes du calcul sont accompagnées d'un exemple simple pour faciliter la compréhension. Un exemple plus complexe avec des données réelles utilisées dans une étude sur la profondeur d'alignement de deux méthodes de séquençage sera ensuite présenté.
+
+Disons un exemple où l'on veut comparer l'efficacité de deux traitements A et B. Quatre patients ont testé les deux traitements et nous avons les résultats d'une mesure biochimique quelconque de chacun des patients:
+
+
+```{r set vectors, message=FALSE, warning=FALSE, results = 'hide', echo=FALSE}
+library(knitr)
+library(sjPlot)
+
+A = matrix(c(10,5,13,8), nrow=1)
+colnames(A) =c("P1","P2","P3","P4")
+B = matrix(c(14,8,12,10), nrow=1)
+colnames(B) =c("P1","P2","P3","P4")
+
+toto = rbind(A,B)
+rownames(toto) = c("A", "B")
+
+toto = as.data.frame(toto)
+
+```
+`r sjt.df(toto ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE)$knitr`
+
+- Analyser le problème: définir l'hypothèse nulle et l'hypothèse alternative (celle que l'on veut tester):
+
+   H0: Il n'y a pas de différence entre les mesures biochimiques obtenues des deux traitements différents.  
+   H1: Les deux traitements donnent des résultats de mesures biochimiques différents (hypothèse bivariée).
+
+- Choisir la statistique la plus appropriée pour tester l'hypothèse alternative et la calculer sur nos observations:
+
+  La statistique utilisée est la différence moyenne entre les mesures biochimiques de chaque patient, pour les deux traitments.  
+  La statistique observée est donc: ((10-14)+(5-8)+(13-12)+(8-10))/4 = -2
+  
+```{r obs, message=FALSE, warning=FALSE}
+
+obs.diff = A-B
+round(mean(obs.diff))
+
+```
+- Décider de la façon de faire les permutations:
+
+  Pour réduire le nombre d'opérations à effectuer, les combinaisons seront utilisées plutôt que les permutations. Les permutations auraient augmenté inutilement le nombre et le temps de calculs et les résultats obtenus auraient été les mêmes. Cela dit, le terme "permutation" sera tout de même employé dans les explications qui suivent pour simplifier le vocabulaire, mais ce sont bel et bien des combinaisons qui sont utilisées. Comme les données sont pairées, il faut en tenir compte dans les permutations. De cette façon, pour chaque permutation, chaque patient doit apparaître une seule fois dans chacun des deux traitements. En d'autres mots, les mesures biochimiques associées à un même patient ne doivent jamais être dans un même traitement, et ce pour chaque permutation. De cette façon, les traitements contiennent toujours quatre mesures associées à des patients différents. Un total de 16 (2^4) permutations seront donc traitées. 
+  
+```{r nrep , message=FALSE, warning=FALSE}
+
+nreps <- 2^dim(A)[2]
+nreps
+
+```
+  
+- Faire le test de permutations pairées. La méthode de calcul employée rend les calculs très simples. Elle est inspirée de la méthode trouvée sur le site Internet "http://www.uvm.edu/~dhowell/methods8/Supplements/R-Programs/RandomizedRepeated.R".   
+  
+  **En voici les étapes:**
+  
+- Une matrice de deux lignes et d'autant de colonnes qu'il y a d'individus différents est créée. La première ligne ne contient que des "1", alors que la seconde ne contient que des "-1". Ces deux lignes sont permutées et il en résulte autant de lignes (toutes différentes) contenant des "1" et des "-1" que de permutations prévues: 
+  
+```{r set permutations, message=FALSE, warning=FALSE}
+
+base = as.data.frame(matrix(rep(c(-1,1),dim(A)[2]), nr =2))
+base
+
+permutations = as.matrix(expand.grid(base))
+permutations
+```
+       
+- La matrice "permutations" est ensuite multipliée au vecteur des différences entre les deux vecteurs originaux. En effet, puisque les données sont pairées, la soustraction des deux valeurs associées à un même individu entraînera toujours le même résultat en valeur absolue, c'est-à-dire que le résultat sera toujours "x" ou "-x". Par exemple, pour le patient 1 (P1), la valeur associée au traitement A sera toujours 10 ou 14. De cette façon, le résultat de la soustraction entre les deux sera toujours -4 ou 4. Il en va de même avec les autres. Les résultats seront donc toujours respectivement: 4 ou -4, 3 ou -3, 1 ou -1, 2 ou -2. Cela fait en sorte qu'il est possible de faire le calcul une seule fois et de le multiplier aux lignes de *permutations* ensuite. Voici quelques exemples des permutations obtenues si le calcul est fait de façon manuelle comparées à celles obtenues en utilisant la méthode avec la matrice *permutations*:
+  
+```{r obs val, message=FALSE, warning=FALSE, results = 'hide', echo=FALSE}
+
+obs.diff = A - B
+toto = rbind(toto, obs.diff)
+rownames(toto) = c("A", "B", "A-B")
+
+
+```
+
+`r sjt.df(toto ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE, title= "Données originales")$knitr`
+ 
+```{r perm manuelles, message=FALSE, warning=FALSE, results = 'hide', echo=FALSE}
+
+A = matrix(c(14,8,12,10), nrow=1)
+colnames(A) =c("P1","P2","P3","P4")
+B = matrix(c(10,5,13,8), nrow=1)
+colnames(B) =c("P1","P2","P3","P4")
+obs.diff = A - B
+toto1 = rbind(A,B,obs.diff)
+rownames(toto1) = c("A", "B", "A-B")
+toto1 = as.data.frame(toto1)
+
+A = matrix(c(10,8,12,10), nrow=1)
+colnames(A) =c("P1","P2","P3","P4")
+B = matrix(c(14,5,13,8), nrow=1)
+colnames(B) =c("P1","P2","P3","P4")
+obs.diff = A - B
+toto2 = rbind(A,B,obs.diff)
+rownames(toto2) = c("A", "B", "A-B")
+toto2 = as.data.frame(toto2)
+
+A = matrix(c(14,5,12,10), nrow=1)
+colnames(A) =c("P1","P2","P3","P4")
+B = matrix(c(10,8,13,8), nrow=1)
+colnames(B) =c("P1","P2","P3","P4")
+obs.diff = A - B
+toto3 = rbind(A,B,obs.diff)
+rownames(toto3) = c("A", "B", "A-B")
+toto3 = as.data.frame(toto3)
+
+A = matrix(c(10,5,12,10), nrow=1)
+colnames(A) =c("P1","P2","P3","P4")
+B = matrix(c(14,8,13,8), nrow=1)
+colnames(B) =c("P1","P2","P3","P4")
+obs.diff = A - B
+toto4 = rbind(A,B,obs.diff)
+rownames(toto4) = c("A", "B", "A-B")
+toto4 = as.data.frame(toto4)
+
+
+```
+
+IL SEMBLE QUE LE SEUL MOYEN SIMPLE DE METTRE CES TABLEAUX CÔTE-À-CÔTE EST DE LES TRANSFORMER EN IMAGES ET IMPORTER LE RÉSULTAT. 
+
+**Manuellement**
+
+`r sjt.df(toto1 ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE, title="Permutation 1")$knitr`
+`r sjt.df(toto2 ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE, title="Permutation 2")$knitr`
+`r sjt.df(toto3 ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE, title="Permutation 3")$knitr`
+`r sjt.df(toto4 ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE, title="Permutation 4")$knitr` 
+
+```{r perm auto, message=FALSE, warning=FALSE, results = 'hide', echo=FALSE}
+
+A = matrix(c(10,5,13,8), nrow=1)
+colnames(A) =c("P1","P2","P3","P4")
+B = matrix(c(14,8,12,10), nrow=1)
+colnames(B) =c("P1","P2","P3","P4")
+obs.diff = A - B
+
+res = obs.diff*permutations[1,]
+titi = rbind(obs.diff, permutations[1,],res)
+rownames(titi) = c("A-B", "Perm. 1", "Résultats")
+titi=as.data.frame(titi)
+
+res = obs.diff*permutations[2,]
+titi2 = rbind(obs.diff, permutations[2,],res)
+rownames(titi2) = c("A-B", "Perm. 2", "Résultats")
+titi2=as.data.frame(titi2)
+
+res = obs.diff*permutations[3,]
+titi3 = rbind(obs.diff, permutations[3,],res)
+rownames(titi3) = c("A-B", "Perm. 3", "Résultats")
+titi3=as.data.frame(titi3)
+
+res = obs.diff*permutations[4,]
+titi4 = rbind(obs.diff, permutations[4,],res)
+rownames(titi4) = c("A-B", "Perm. 4", "Résultats")
+titi4=as.data.frame(titi4)
+
+```
+
+**Avec la matrice des permutations**
+
+`r sjt.df(titi ,describe = FALSE, stringVariable = "", no.output=TRUE, title="Permutation 1")$knitr`
+`r sjt.df(titi2 ,describe = FALSE, stringVariable = "", no.output=TRUE, title="Permutation 2")$knitr`
+`r sjt.df(titi3 ,describe = FALSE, stringVariable = "", no.output=TRUE, title="Permutation 3")$knitr`
+`r sjt.df(titi4 ,describe = FALSE, stringVariable = "", no.output=TRUE, title="Permutation 4")$knitr`
+
+- Obtenir la statistique associée à chaque permutation. Dans ce cas-ci, il s'agit de la différence moyenne entre les résultats obtenus avec le traitment A et le traitement B.
+
+```{r perm obs, message=FALSE, warning=FALSE}
+
+obs.diff = A-B
+
+allmeans = (permutations %*% as.vector(obs.diff))/(dim(A)[2]) 
+allmeans
+
+```
+
+- Ordonner les résultats obtenus. Avec les données de l'exemple précédent on obtient le liste suivante:
+
+```{r order, message=FALSE, warning=FALSE, echo=FALSE}
+options(width=120)
+
+sort(allmeans)
+
+```
+  
+- On constate que les résultats obtenus sont symétriques et centrés en zéro, ce qui fait en sorte qu'il est possible de réduire la quantité de permutations à effectuer de moitié en s'assurant de sélectionner les valeurs uniques des duplicats et en utilisant leurs valeurs absolues. La façon dont est construite la matrice "permutations" permet d'obtenir les permutations uniques (sans duplicat) puisque la dernière colonne est constante à "-1" pour la première moitié et constante à "1" pour la seconde moitié de la matrice. La programmation de la fonction est donc faite telle que les valeurs absolues de la première moitié de la matrice "permutations" sont utilisées. De cette façon, puisque la valeur observée de l'exemple est "-2", on considère maintenant qu'elle est "2" et on ne regarde que la moitié droite du diagramme à barres des résultats des permutations. Concernant l'exemple, seulement 8 des 16 permutations devront donc être effectuées. 
+
+```{r barplot, message=FALSE, warning=FALSE, results = 'hide', echo=FALSE}
+
+barplot(table(allmeans), xlab="Résultats des permutations", ylab="Fréquence", main="Diagramme à barres des résultats des permutations")
+abline(v=6.7, col="red", lwd=2 ,lty=5)
+
+```
+
+- Fixer les bornes de confiance. Si l'on avait conservé l'intégralité des permutations possibles, deux bornes auraient été calculées: une à gauche (borne inférieure) et une à droite (borne supérieure). Disons, que le niveau de confiance utilisé est de 95%, alors le 2.5^e et le 97.5^e centiles auraient été calculés et considérés comme les bornes de confiance. Puisque nous utilisons seulement la moitié des permutations, le 95^e centile est plutôt calculé et constitue l'unique borne supérieure. En termes simples, cette valeur correspond à la dernière valeur qui peut être considérée comme n'étant pas extrême. Il est à noter que la fonction "quantile" est plutôt lente considérant que les données traitées sont très volumineuses. Une façon plus efficace de déterminer les bornes de confiance est alors de calculer l'index du centile ciblé et de simplement aller chercher la valeur associée à cet index parmi les résultats ordonnés des permutations. Dans l'exemple, n'ayant plus que huit observations qui sont considérées pour les calculs, avec un niveau de confiance de 85%, l'index du 85^e centiles est 7, ce qui correspond à la valeur "2". Cette valeur est déterminée par:
+  
+```{r conf.lev , message=FALSE, warning=FALSE}
+
+  nreps = 8
+  confidenceLevel = 0.85
+  ceiling(nreps*confidenceLevel)
+ 
+  (sort(allmeans)[9:16])[7]
+
+```  
+  
+  
+- Déterminer si l'hypothèse nulle est rejetée ou non. Les observations dont la statistique se trouve en dehors de ces bornes de confiance sont considérées comme étant significativement différentes. Donc si une valeur est plus grande que la borne supérieure ou plus petite que la borne inférieure, alors l'hypothèse nulle selon laquelle les deux traitments sont équivalents est rejetée. Dans l'exemple, comme la valeur observée de la statistique initiale est 2, on ne peut pas rejeter l'hypothèse nulle puisque cette valeur n'est pas supérieure à la borne supérieure qui est elle-même 2.
+
+
+Exemple avec des données de profondeurs de rides
+------------------------------------------------------
+
+Dans le cadre du projet pilote de comparaison de deux plateformes commerciales de séquençage d'exomes (Agilent v5.0 et Nimblegen v3.0), les génomes de 7 patients ont été séquencés avec les deux technologies. Nous avons donc des données pairées. L'exemple est tiré des données s'apparentant au chromosome 1, pour les positions allant de 10464260 à 10464270. Un test global (ligne "ALL" qui est la sommes des lignes de chaque colonne) est aussi effectué sur ces 11 positions: 
+
+```{r matrices , message=FALSE, warning=FALSE, echo=FALSE}
+
+Nimblegen = matrix(c(53,53,54,51,54,53,54,52,51,53,53,59,57,58,57,57,57,55,57,57,58,57,44,46,46,46,46,46,46,47,47,47,47,25,24,24,24,24,25,26,27,27,27,26,34,33,30,30,31,31,32,33,34,35,35,34,31,31,31,30,27,30,32,32,32,33,29,28,27,27,27,26,27,27,25,27,28),ncol=7)
+Agilent = matrix(c(55,58,57,57,58,59,62,62,64,66,66,46,46,47,46,47,48,57,58,57,58,58,63,63,64,64,65,65,66,69,72,73,73,79,77,77,77,78,77,80,79,79,81,82,51,51,50,50,50,49,54,54,55,56,56,66,66,66,65,65,65,68,70,71,69,70,69,68,68,68,68,66,70,70,69,71,71),ncol=7)
+
+colnames(Agilent) =c("P1","P2","P3","P4","P5","P6","P7")
+colnames(Nimblegen) =c("P1","P2","P3","P4","P5","P6","P7")
+
+Agilent = rbind(apply(Agilent, 2, sum), Agilent)
+Nimblegen = rbind(apply(Nimblegen, 2, sum), Nimblegen)
+
+rownames(Agilent) = c("ALL","10464260","10464261","10464262","10464263","10464264","10464265","10464266","10464267","10464268","10464269","10464270")
+rownames(Nimblegen) = c("ALL","10464260","10464261","10464262","10464263","10464264","10464265","10464266","10464267","10464268","10464269","10464270")
+
+```
+
+```{r agi+nim , message=FALSE, warning=FALSE}
+
+Nimblegen
+Agilent
+
+```
+
+Les valeurs observées de la statistique pour chaque position:
+
+```{r obs val , message=FALSE, warning=FALSE, echo=FALSE}
+
+obs.diff <- Nimblegen - Agilent
+
+apply(obs.diff, 1, function(x) abs(mean(x)))
+  
+
+```
+
+Le nombre de permutations effectuées pour chaque test est de 64 puisque 2^7 =128, 128/2=64:
+
+```{r nbr perm , message=FALSE, warning=FALSE}
+
+
+nreps <- 2^(dim(Nimblegen)[2]-1)
+nreps
+
+```
+
+La base pour obtenir les permutations est:
+
+```{r base, message=FALSE, warning=FALSE, echo=FALSE}
+
+base <- as.data.frame(matrix(rep(c(-1,1),dim(Nimblegen)[2]), nr =2))
+base
+
+permutations <- as.matrix(expand.grid(base))
+
+testPer <- permutations[1:((dim(permutations)[1])/2),]
+
+```
+
+Les 64 permutations sont:
+
+```{r two-tables, results='asis', echo=FALSE}
+
+Perm = 1:64
+testPer = cbind(Perm, testPer)
+
+t1 = kable(testPer[1:16,], format='html', output = FALSE, row.names=FALSE)
+t2 = kable(testPer[17:32,], format='html', output = FALSE, row.names=FALSE)
+t3 = kable(testPer[33:48,], format='html', output = FALSE, row.names=FALSE)
+t4 = kable(testPer[49:64,], format='html', output = FALSE, row.names=FALSE)
+cat(c('<table><tr valign="top"><td>', t1, '</td><td>', t2, '</td><td>', t3, '</td><td>', t4, '</td><tr></table>'),
+    sep = '')
+
+testPer=testPer[,-1]
+
+```
+
+Les 64 résultats ordonnés des permutations de chaque position sont: 
+
+```{r perm ord, results='asis', echo=FALSE}
+
+kable(round((apply(obs.diff, 1, function(x) sort(abs(testPer %*% x)/(dim(Agilent)[2])))), digits=4), format='html')
+
+```
+
+Avec un niveau de confiance de 95%, l'index des bornes de confiance supérieures est:
+
+```{r borne sup, message=FALSE, warning=FALSE}
+  
+nreps = 64
+confidenceLevel = 0.95
+ceiling(nreps*confidenceLevel)
+
+```
+
+Pour chaque position, ces bornes sont:
+
+```{r borne sup data, message=FALSE, warning=FALSE, echo=FALSE}
+
+borne = apply(obs.diff, 1, function(x) sort(abs(testPer %*% x)/(dim(Agilent)[2])))[61,]
+borne
+
+```
+
+Comparer les bornes supérieures aux statistiques observées. 
+Rappel des valeurs observées de la statistique pour chaque position:
+
+```{r borne+obs , message=FALSE, warning=FALSE, echo=FALSE}
+
+obs = apply(obs.diff, 1, function(x) abs(mean(x)))
+obs
+
+Res = unlist(lapply(1:12, function(x) if(obs[x] > borne[x]){if(mean(Nimblegen[x,]) > mean(Agilent[x,])){Res = "Nimblegen"}else{Res = "Agilent"}}else{Res="Aucun"}))
+
+```
+
+Si les statistiques observées sont supérieures aux bornes, alors l'hypothèse nulle est rejetée. La technologie associée à des profondeurs significativement plus grandes est affichée. Dans cet exemple, il semble donc que toutes les positions (ainsi que le test global) sont significativement différentes. Dans tous les cas, c'est Agilent qui donne les plus grandes profondeurs. Les technologies et les p-values associées à chaque positions sont:
+
+```{r res , message=FALSE, warning=FALSE, echo=FALSE}
+
+Res = t(as.matrix(Res))
+borne = apply(obs.diff, 1, function(x) sort(abs(testPer %*% x)/(dim(Agilent)[2])))
+p.val = unlist(lapply(1:12, function(x) length(borne[,x][borne[,x] >= obs[x]])/nreps))
+p.val = t(as.matrix(p.val))
+Res = rbind(Res, p.val)
+
+colnames(Res) = c("ALL","10464260","10464261","10464262","10464263","10464264","10464265","10464266","10464267","10464268","10464269","10464270")
+rownames(Res) = c("Technologie", "P-value")
+t(Res)
+
+```
+
+
