@@ -6,6 +6,7 @@ Date: 2014-10-15
 Authors@R: c(
         person("Astrid Louise","Deschenes", email="Astrid-Louise.Deschenes@crchudequebec.ulaval.ca", role=c("cre","aut")),
         person("Elsa", "Bernatchez", email="elsa.bernatchez.1@ulaval.ca", role=c("aut")),
+        person("Lajmi", "Lakhal-Chaieb", email="Lajmi.Lakhal@mat.ulaval.ca", role=c("aut")),
         person("Arnaud", "Droit", email="arnaud.droit@crchuq.ulaval.ca", role=c("aut")))
 Description: This pacakge carries out permatation tests on paired observations.
 Suggests: RUnit, knitr
