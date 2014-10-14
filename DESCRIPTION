@@ -1,4 +1,15 @@
 Package: PairedPermutationTest
 Type: Package
-Title: PairedPermutationTest: a package to carry out permutation tests on paired observations.
-Version: 0.99
+Title: PairedPermutationTest: a package to execute paired permutation tests.
+Version: 0.99.0
+Date: 2014-10-15
+Authors@R: c(
+        person("Astrid Louise","Deschenes", email="Astrid-Louise.Deschenes@crchudequebec.ulaval.ca", role=c("cre","aut")),
+        person("Elsa", "Bernatchez", email="elsa.bernatchez.1@ulaval.ca", role=c("aut")),
+        person("Arnaud", "Droit", email="arnaud.droit@crchuq.ulaval.ca", role=c("aut")))
+Description: TODO
+Suggests: RUnit, knitr
+License: Artistic-2.0 | file LICENSE
+URL: https://github.com/adeschen/PairedPermutationTest
+BugReports: https://github.com/adeschen/PairedPermutationTest/issues
+VignetteBuilder: knitr
