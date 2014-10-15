@@ -84,9 +84,9 @@ permutationTest <- function(matrix1, matrix2, confidenceLevel=0.95){
   if (!is.numeric(confidenceLevel)) {
     stop("The confidence level must be numeric.")
   }
-  # The confidence level must be a fraction between 0 and 1
-  if (confidenceLevel<0 | confidenceLevel>1) {
-    stop("The confidence level must be a fraction between 0 and 1.")
+  # The confidence level must be a value between 0 and 1
+  if (confidenceLevel < 0 | confidenceLevel > 1) {
+    stop("The confidence level must be a value between 0 and 1.")
   }
   
   ##############################################
