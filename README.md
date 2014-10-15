@@ -1,7 +1,7 @@
 PairedPermutationTest
 ===============
 
-This R package carries out permatation tests on paired observations.
+This R package carries out permutation tests on paired observations.
 
 
 ## Authors ##
