@@ -1,27 +1,14 @@
----
-title: "PairedPermutationTest"
-output:
-  html_document:
-    theme: null
-    toc: yes
-  pdf_document:
-    theme: null
-    toc: yes
----
-
-<!-- rmarkdown v1 -->
 <!--
 %\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{PairedPermutationTest: similarity between two ChIP profiles}
+%\VignetteIndexEntry{PairedPermutationTest: permutation tests on paired observations}
 -->
-
 
 Permatation tests on paired observations
 ===========================================================
 
 Astrid Louise Deschenes, Elsa Bernatchez, Lajmi Lakhal-Chaieb and Arnaud Droit.
 
-This package and the underlying ChIPprofileSimilarity code are distributed under the Artistic license 2.0. You are free to use and redistribute this software. 
+This package and the underlying PairedPermutationTest code are distributed under the Artistic license 2.0. You are free to use and redistribute this software. 
 
 
 ## Permatation tests examples
