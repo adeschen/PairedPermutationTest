@@ -9,7 +9,7 @@ output:
 %\VignetteIndexEntry{PairedPermutationTest: permutation tests on paired observations}
 -->
 
-Permatation tests on paired observations
+Permutation tests on paired observations
 ===========================================================
 
 Astrid Louise Deschenes, Elsa Bernatchez, Lajmi Lakhal-Chaieb and Arnaud Droit.
