@@ -1,0 +1,66 @@
+---
+output: 
+  html_document:
+    self_contained: no
+---
+
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{PairedPermutationTest: permutation tests on paired observations}
+-->
+
+```{r set vectors, message=FALSE, warning=FALSE, results = 'hide', echo=FALSE}
+library(Rcpp)
+library(sjPlot)
+````
+
+Permutation tests on paired observations
+===========================================================
+
+Astrid Louise Deschenes, Elsa Bernatchez, Lajmi Lakhal-Chaieb and Arnaud Droit.
+
+This package and the underlying PairedPermutationTest code are distributed under the Artistic license 2.0. You are free to use and redistribute this software. 
+
+
+Permutations on paired observations Principle 
+========================================================
+
+Nonparametric tests are statistical procedures which represent an interesting option to establish successful inferences when there is little available observations or when parametric assumptions are not respected. Permutation tests are quite interesting nonparametric tests since the only condition to respect is that the observations are identically and independently distributed under the null hypothesis. Even more, permutation tests do not impose the use of one particular test statistic.
+
+The objective is to obtain the distribution of the selected test statistic under the null hypothesis by calculating all possible values of the test statistic under rearrangements of the labels on the observations. Under the null hypothesis, each permutation has the same probability to be selected. Once the distribution is calculated, it is easy to compared the real observations to the one obtained by permetutations. The probability associated to the reject of the null hypothesis for an observation correspond to the number of permutations where the test statistic calculated is equivalent or extreme divided by the total number of permutations done.
+
+In presence of paired observations, the permutations must take into account the 
+
+Dans le cas de données pairées, les permutations doivent tenir compte des pairages en s'assurant que les observations associées à un même individu ne sont jamais dans un même groupe. En d'autres mots, chaque groupe doit contenir une seule observation associée à un même individu. Considérant une situation où l'on compare 2 groupes de x individus, le nombre possibles de permutations passe alors de (2x)! (2x factoriel) dans une situation régulière sans restriction à 2^x dans une situation où les individus sont pairés.
+
+La fonction présentée ici porte exclusivement sur les tests de permutations pairées. La statistique utilisée est la différence de moyenne entre deux groupes pairés. À titre indicatif, l'hypothèse nulle testée ici affirme que les données retrouvées dans chaque groupe ne sont pas différentes, c'est-à-dire que les moyennes calculées dans chacun des groupes sont équivalentes. De plus, les permutations utilisées sont toujours exhaustives, c'est-à-dire que toutes les permutations possibles sont utilisées et non un sous-ensemble de celles-ci.
+
+
+Étapes du calcul
+------------------------------------------------------
+
+Les étapes du calcul sont accompagnées d'un exemple simple pour faciliter la compréhension. Un exemple plus complexe avec des données réelles utilisées dans une étude sur la profondeur d'alignement de deux méthodes de séquençage sera ensuite présenté.
+
+Disons un exemple où l'on veut comparer l'efficacité de deux traitements A et B. Quatre patients ont testé les deux traitements et nous avons les résultats d'une mesure biochimique quelconque de chacun des patients:
+
+
+```{r demo_01, message=FALSE, warning=FALSE,  echo=TRUE}
+
+# Create demo dataframe with results of 2 different treatments (A and B) on four patients (Patient_01 to Patient_04)
+
+demo = rbind(c(10,5,13,8), c(14,8,12,10))
+rownames(demo) = c("A", "B")
+colnames(demo) =c("Patient_01", "Patient_02", "Patient_03", "Patient_04")
+
+demo = as.data.frame(demo)
+
+```
+`r sjt.df(demo ,describe = FALSE, stringVariable = "Treatment", no.output=TRUE)$knitr`
+
+## Hypotheses 
+
+First, hypotheses of the problem should be clearly defined
+
+  * H_null: There is not difference between the results of treatments A and B.  
+  * H_alternative: There is a difference between the results of treatments A and B.    
+

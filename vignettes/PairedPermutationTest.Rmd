@@ -1,3 +1,9 @@
+---
+output: 
+  html_document:
+    self_contained: no
+---
+
 <!--
 %\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{PairedPermutationTest: permutation tests on paired observations}
@@ -8,7 +14,8 @@ Permatation tests on paired observations
 
 Astrid Louise Deschenes, Elsa Bernatchez, Lajmi Lakhal-Chaieb and Arnaud Droit.
 
-This package and the underlying PairedPermutationTest code are distributed under the Artistic license 2.0. You are free to use and redistribute this software. 
+This package and the underlying PairedPermutationTest code are distributed under
+the Artistic license 2.0. You are free to use and redistribute this software. 
 
 
 ## Permatation tests examples
@@ -48,7 +55,7 @@ rownames(toto) = c("A", "B")
 toto = as.data.frame(toto)
 
 ```
-`r sjt.df(toto ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE)$knitr`
+#`r sjt.df(toto ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE)$knitr`
 
 - Analyser le problème: définir l'hypothèse nulle et l'hypothèse alternative (celle que l'on veut tester):
 
@@ -83,7 +90,7 @@ nreps
   
 - Une matrice de deux lignes et d'autant de colonnes qu'il y a d'individus différents est créée. La première ligne ne contient que des "1", alors que la seconde ne contient que des "-1". Ces deux lignes sont permutées et il en résulte autant de lignes (toutes différentes) contenant des "1" et des "-1" que de permutations prévues: 
   
-```{r set permutations, message=FALSE, warning=FALSE}
+```{r permutations, message=FALSE, warning=FALSE}
 
 base = as.data.frame(matrix(rep(c(-1,1),dim(A)[2]), nr =2))
 base
@@ -94,18 +101,18 @@ permutations
        
 - La matrice "permutations" est ensuite multipliée au vecteur des différences entre les deux vecteurs originaux. En effet, puisque les données sont pairées, la soustraction des deux valeurs associées à un même individu entraînera toujours le même résultat en valeur absolue, c'est-à-dire que le résultat sera toujours "x" ou "-x". Par exemple, pour le patient 1 (P1), la valeur associée au traitement A sera toujours 10 ou 14. De cette façon, le résultat de la soustraction entre les deux sera toujours -4 ou 4. Il en va de même avec les autres. Les résultats seront donc toujours respectivement: 4 ou -4, 3 ou -3, 1 ou -1, 2 ou -2. Cela fait en sorte qu'il est possible de faire le calcul une seule fois et de le multiplier aux lignes de *permutations* ensuite. Voici quelques exemples des permutations obtenues si le calcul est fait de façon manuelle comparées à celles obtenues en utilisant la méthode avec la matrice *permutations*:
   
-```{r obs val, message=FALSE, warning=FALSE, results = 'hide', echo=FALSE}
+```{r val, message=FALSE, warning=FALSE, results = 'hide', echo=FALSE}
 
 obs.diff = A - B
 toto = rbind(toto, obs.diff)
 rownames(toto) = c("A", "B", "A-B")
 
-
+toto
 ```
 
-`r sjt.df(toto ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE, title= "Données originales")$knitr`
+#`r sjt.df(toto ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE, title= "Données originales")$knitr`
  
-```{r perm manuelles, message=FALSE, warning=FALSE, results = 'hide', echo=FALSE}
+```{r perm_manuelles, message=FALSE, warning=FALSE, results = 'hide', echo=FALSE}
 
 A = matrix(c(14,8,12,10), nrow=1)
 colnames(A) =c("P1","P2","P3","P4")
@@ -148,12 +155,12 @@ toto4 = as.data.frame(toto4)
 
 **Manuellement**
 
-`r sjt.df(toto1 ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE, title="Permutation 1")$knitr`
-`r sjt.df(toto2 ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE, title="Permutation 2")$knitr`
-`r sjt.df(toto3 ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE, title="Permutation 3")$knitr`
-`r sjt.df(toto4 ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE, title="Permutation 4")$knitr` 
+#`r sjt.df(toto1 ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE, title="Permutation 1")$knitr`
+#`r sjt.df(toto2 ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE, title="Permutation 2")$knitr`
+#`r sjt.df(toto3 ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE, title="Permutation 3")$knitr`
+#`r sjt.df(toto4 ,describe = FALSE, stringVariable = "Traitement", no.output=TRUE, title="Permutation 4")$knitr` 
 
-```{r perm auto, message=FALSE, warning=FALSE, results = 'hide', echo=FALSE}
+```{r perm_auto, message=FALSE, warning=FALSE, results = 'hide', echo=FALSE}
 
 A = matrix(c(10,5,13,8), nrow=1)
 colnames(A) =c("P1","P2","P3","P4")
@@ -185,14 +192,14 @@ titi4=as.data.frame(titi4)
 
 **Avec la matrice des permutations**
 
-`r sjt.df(titi ,describe = FALSE, stringVariable = "", no.output=TRUE, title="Permutation 1")$knitr`
-`r sjt.df(titi2 ,describe = FALSE, stringVariable = "", no.output=TRUE, title="Permutation 2")$knitr`
-`r sjt.df(titi3 ,describe = FALSE, stringVariable = "", no.output=TRUE, title="Permutation 3")$knitr`
-`r sjt.df(titi4 ,describe = FALSE, stringVariable = "", no.output=TRUE, title="Permutation 4")$knitr`
+#`r sjt.df(titi ,describe = FALSE, stringVariable = "", no.output=TRUE, title="Permutation 1")$knitr`
+#`r sjt.df(titi2 ,describe = FALSE, stringVariable = "", no.output=TRUE, title="Permutation 2")$knitr`
+#`r sjt.df(titi3 ,describe = FALSE, stringVariable = "", no.output=TRUE, title="Permutation 3")$knitr`
+#`r sjt.df(titi4 ,describe = FALSE, stringVariable = "", no.output=TRUE, title="Permutation 4")$knitr`
 
 - Obtenir la statistique associée à chaque permutation. Dans ce cas-ci, il s'agit de la différence moyenne entre les résultats obtenus avec le traitment A et le traitement B.
 
-```{r perm obs, message=FALSE, warning=FALSE}
+```{r perm_obs, message=FALSE, warning=FALSE}
 
 obs.diff = A-B
 
@@ -221,7 +228,7 @@ abline(v=6.7, col="red", lwd=2 ,lty=5)
 
 - Fixer les bornes de confiance. Si l'on avait conservé l'intégralité des permutations possibles, deux bornes auraient été calculées: une à gauche (borne inférieure) et une à droite (borne supérieure). Disons, que le niveau de confiance utilisé est de 95%, alors le 2.5^e et le 97.5^e centiles auraient été calculés et considérés comme les bornes de confiance. Puisque nous utilisons seulement la moitié des permutations, le 95^e centile est plutôt calculé et constitue l'unique borne supérieure. En termes simples, cette valeur correspond à la dernière valeur qui peut être considérée comme n'étant pas extrême. Il est à noter que la fonction "quantile" est plutôt lente considérant que les données traitées sont très volumineuses. Une façon plus efficace de déterminer les bornes de confiance est alors de calculer l'index du centile ciblé et de simplement aller chercher la valeur associée à cet index parmi les résultats ordonnés des permutations. Dans l'exemple, n'ayant plus que huit observations qui sont considérées pour les calculs, avec un niveau de confiance de 85%, l'index du 85^e centiles est 7, ce qui correspond à la valeur "2". Cette valeur est déterminée par:
   
-```{r conf.lev , message=FALSE, warning=FALSE}
+```{r conf_lev , message=FALSE, warning=FALSE}
 
   nreps = 8
   confidenceLevel = 0.85
@@ -256,7 +263,7 @@ rownames(Nimblegen) = c("ALL","10464260","10464261","10464262","10464263","10464
 
 ```
 
-```{r agi+nim , message=FALSE, warning=FALSE}
+```{r agi_nim , message=FALSE, warning=FALSE}
 
 Nimblegen
 Agilent
@@ -265,7 +272,7 @@ Agilent
 
 Les valeurs observées de la statistique pour chaque position:
 
-```{r obs val , message=FALSE, warning=FALSE, echo=FALSE}
+```{r obsval , message=FALSE, warning=FALSE, echo=FALSE}
 
 obs.diff <- Nimblegen - Agilent
 
@@ -276,7 +283,7 @@ apply(obs.diff, 1, function(x) abs(mean(x)))
 
 Le nombre de permutations effectuées pour chaque test est de 64 puisque 2^7 =128, 128/2=64:
 
-```{r nbr perm , message=FALSE, warning=FALSE}
+```{r nbrperm , message=FALSE, warning=FALSE}
 
 
 nreps <- 2^(dim(Nimblegen)[2]-1)
@@ -317,7 +324,7 @@ testPer=testPer[,-1]
 
 Les 64 résultats ordonnés des permutations de chaque position sont: 
 
-```{r perm ord, results='asis', echo=FALSE}
+```{r permord, results='asis', echo=FALSE}
 
 kable(round((apply(obs.diff, 1, function(x) sort(abs(testPer %*% x)/(dim(Agilent)[2])))), digits=4), format='html')
 
@@ -325,7 +332,7 @@ kable(round((apply(obs.diff, 1, function(x) sort(abs(testPer %*% x)/(dim(Agilent
 
 Avec un niveau de confiance de 95%, l'index des bornes de confiance supérieures est:
 
-```{r borne sup, message=FALSE, warning=FALSE}
+```{r bornesup, message=FALSE, warning=FALSE}
   
 nreps = 64
 confidenceLevel = 0.95

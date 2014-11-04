@@ -14,3 +14,4 @@ License: Artistic-2.0 | file LICENSE
 URL: https://github.com/adeschen/PairedPermutationTest
 BugReports: https://github.com/adeschen/PairedPermutationTest/issues
 VignetteBuilder: knitr
+Depends: Rcpp, sjPlot
