@@ -9,9 +9,11 @@ Authors@R: c(
         person("Lajmi", "Lakhal-Chaieb", email="Lajmi.Lakhal@mat.ulaval.ca", role=c("aut")),
         person("Arnaud", "Droit", email="arnaud.droit@crchuq.ulaval.ca", role=c("aut")))
 Description: This package carries out permutation tests on paired observations.
-Suggests: RUnit, knitr
+Depends: Rcpp,
+  sjPlot
+Suggests: RUnit,
+  knitr
 License: Artistic-2.0 | file LICENSE
 URL: https://github.com/adeschen/PairedPermutationTest
 BugReports: https://github.com/adeschen/PairedPermutationTest/issues
 VignetteBuilder: knitr
-Depends: Rcpp, sjPlot
